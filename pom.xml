@@ -8,11 +8,11 @@
         <version>3.0.3-SNAPSHOT</version>
         <relativePath/>
     </parent>
-    <groupId>com.company</groupId>
-    <artifactId>CryptoExchangeTask</artifactId>
+    <groupId>cs.vsu</groupId>
+    <artifactId>BusinessService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>CryptoExchangeTask</name>
-    <description>CryptoExchangeTask</description>
+    <name>BusinessService</name>
+    <description>BusinessService</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -54,11 +54,6 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
             <version>42.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
