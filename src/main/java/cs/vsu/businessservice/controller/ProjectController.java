@@ -2,13 +2,7 @@ package cs.vsu.businessservice.controller;
 
 import cs.vsu.businessservice.dto.project.ProjectRequest;
 import cs.vsu.businessservice.dto.project.ProjectResponse;
-import cs.vsu.businessservice.entity.Project;
-import cs.vsu.businessservice.exception.NoAuthHeaderException;
-import cs.vsu.businessservice.exception.UnableToAccessToForeignProjectException;
 import cs.vsu.businessservice.service.ProjectService;
-import cs.vsu.businessservice.service.ReflectionService;
-import cs.vsu.businessservice.service.UserService;
-import cs.vsu.businessservice.service.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +18,11 @@ public class ProjectController {
     private final ProjectService projectService;
     @PostMapping
     public ResponseEntity<ProjectResponse> add(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody ProjectRequest projectRequest
     ) throws URISyntaxException {
 
-        var project = projectService.add(projectRequest);
+        var project = projectService.add(authHeader, projectRequest);
 
         return ResponseEntity
                 .created(new URI("/api/v1/projects/" + project.getId()))

@@ -19,9 +19,4 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(User.class));
     }
 
-    @Override
-    public User getUser(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(User.class));
-    }
 }

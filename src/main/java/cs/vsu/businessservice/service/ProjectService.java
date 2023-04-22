@@ -7,7 +7,7 @@ import cs.vsu.businessservice.entity.User;
 import java.util.Set;
 
 public interface ProjectService {
-    Project add(ProjectRequest projectRequest);
+    Project add(String authHeader, ProjectRequest projectRequest);
 
     Project getProject(Long id);
 

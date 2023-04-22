@@ -8,6 +8,4 @@ import java.util.Set;
 
 public interface UserService {
     User getUser(String username);
-
-    User getUser(Long id);
 }

@@ -11,6 +11,7 @@ import cs.vsu.businessservice.service.ProjectService;
 import cs.vsu.businessservice.service.ReflectionService;
 import cs.vsu.businessservice.service.UserService;
 import cs.vsu.businessservice.service.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,21 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserService userService;
     private final ReflectionService reflectionService;
 
+    @Transactional(rollbackOn = Exception.class)
     @Override
-    public Project add(ProjectRequest projectRequest) {
-        var user = userService.getUser(projectRequest.getUserId());
-        return Project.builder()
+    public Project add(String authHeader, ProjectRequest projectRequest) {
+        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
+            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED, "No authentication header in request");
+        }
+        var jwtToken = authHeader.substring(7);
+        var user = userService.getUser(jwtService.extractUsername(jwtToken));
+        var project = Project.builder()
                 .name(projectRequest.getProjectName())
                 .creationTime(LocalDateTime.now())
                 .user(user)
                 .build();
+        projectRepo.save(project);
+        return project;
     }
     @Override
     public Project getProject(Long id) {
@@ -58,8 +66,8 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         var project = getProject(id);
-        var userId = project.getUser().getId();
-        var repoUser = userService.getUser(userId);
+        var username = project.getUser().getUsername();
+        var repoUser = userService.getUser(username);
         if (isProjectNotAccessible(authHeader, repoUser)) {
             throw new UnableToAccessToForeignProjectException(
                     HttpStatus.BAD_REQUEST,

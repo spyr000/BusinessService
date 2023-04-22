@@ -6,11 +6,9 @@ import cs.vsu.businessservice.repo.UserRepo;
 import cs.vsu.businessservice.service.ProjectService;
 import cs.vsu.businessservice.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -19,9 +17,13 @@ public class UserController {
     private final UserService userService;
     private final ProjectService projectService;
 
-    @GetMapping("/{user_id}/projects")
-    public ResponseEntity<?> getUserProjects(@PathVariable(name = "user_id") Long userId) {
-        var user = userService.getUser(userId);
+    @GetMapping("/{username}/projects")
+    public ResponseEntity<?> getUserProjects(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+            @PathVariable(name = "username") String username
+    ) {
+
+        var user = userService.getUser(username);
 
         return ResponseEntity.ok()
                 .body(projectService.getAllUserProjects(user));

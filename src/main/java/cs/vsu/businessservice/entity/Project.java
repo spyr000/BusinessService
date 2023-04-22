@@ -26,7 +26,7 @@ public class Project implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "project_id", nullable = false)
     private Long id;
 
@@ -37,7 +37,7 @@ public class Project implements Serializable {
     private LocalDateTime lastEditingTime;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id", unique = false)
     private User user;
 
     // TODO: other fields
