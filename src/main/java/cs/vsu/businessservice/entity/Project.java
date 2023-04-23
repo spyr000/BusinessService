@@ -33,6 +33,28 @@ public class Project implements Serializable {
     @Column(name = "project_name", nullable = false)
     private String name;
 
+    @Column(name = "project_desc")
+    private String desc;
+
+    @Column(name = "years_count", nullable = false)
+    private Integer yearsCount;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "variable_expenses_id")
+    private VariableExpenses variableExpenses;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "investment_id")
+    private Investment investment;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "fixed_expenses_id")
+    private FixedExpenses fixedExpenses;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "economic_id")
+    private Economic economic;
+
     @Column(name = "project_last_editing_time", nullable = false)
     private LocalDateTime lastEditingTime;
 
