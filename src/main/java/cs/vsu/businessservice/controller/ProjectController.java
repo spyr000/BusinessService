@@ -21,7 +21,9 @@ public class ProjectController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody ProjectRequest projectRequest
     ) throws URISyntaxException {
+
         var project = projectService.add(authHeader, projectRequest);
+
         return ResponseEntity
                 .created(new URI("/api/v1/projects/" + project.getId()))
                 .body(ProjectResponse.fromProject(project));
@@ -32,6 +34,7 @@ public class ProjectController {
             @PathVariable(name = "id") Long projectId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
         var project = projectService.getProject(authHeader, projectId);
+
         return ResponseEntity.ok()
                 .body(ProjectResponse.fromProject(project));
     }
@@ -41,18 +44,11 @@ public class ProjectController {
             @RequestBody ProjectRequest request,
             @PathVariable(name = "id") Long projectId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
-        var project = projectService.editProject(authHeader, projectId, request);
+        var project = projectService.getProject(authHeader, projectId);
+        project = projectService.editProject(project,request);
         return ResponseEntity.ok()
                 .body(ProjectResponse.fromProject(project));
     }
 
-//    @GetMapping("/{id}/results")
-//    public ResponseEntity<?> getResults(
-//            @PathVariable(name = "id") Long projectId,
-//            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
-//        var project = projectService.getProjectResults(authHeader, projectId);
-//        return ResponseEntity.ok()
-//                .body(ProjectResponse.fromProject(project));
-//    }
 }
 

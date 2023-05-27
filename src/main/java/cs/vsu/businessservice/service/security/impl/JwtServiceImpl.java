@@ -1,7 +1,4 @@
 package cs.vsu.businessservice.service.security.impl;
-
-import cs.vsu.businessservice.entity.Project;
-import cs.vsu.businessservice.service.UserService;
 import cs.vsu.businessservice.service.security.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +7,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,14 +15,16 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 @Service
 @Setter
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
+
     private final Environment env;
+
+    private static final int TOKEN_EXPIRATION_TIME_MILLIS = 1000 * 3600 * 24 * 7;
 
     @Override
     public String generateToken(
@@ -38,16 +36,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(
-                        new Date(
-                                System.currentTimeMillis()
-                                        + Integer.parseInt(
-                                        Objects.requireNonNull(
-                                                env.getProperty("security.encryption.token-expiration-time-millis")
-                                        )
-                                )
-                        )
-                )
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME_MILLIS))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -61,15 +50,6 @@ public class JwtServiceImpl implements JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
-
-    @Override
-    public boolean isUserHaveAccessToProject(String authHeader, Project project) {
-        var tokenStartIndex = 7;
-        var token = authHeader.substring(tokenStartIndex);
-        var tokenUsername = extractUsername(token);
-        var dbUsername = project.getUser().getUsername();
-        return tokenUsername.equals(dbUsername);
     }
 
     private boolean isTokenExpired(String token) {

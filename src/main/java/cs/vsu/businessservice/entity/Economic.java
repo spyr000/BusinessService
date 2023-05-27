@@ -12,28 +12,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "economic")
+@Table(name="economic")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Economic implements Serializable {
-    @Builder
-    public Economic(Double averagePrice,
-                    Long clientsAmt,
-                    Long ordersCnt,
-                    Double clientsOutflowPercent,
-                    Double proceedPercent,
-                    Double clientAttractionCost,
-                    Project project
-    ) {
-        this.averagePrice = averagePrice;
-        this.clientsAmt = clientsAmt;
-        this.ordersCnt = ordersCnt;
-        this.clientsOutflowPercent = clientsOutflowPercent;
-        this.proceedPercent = proceedPercent;
-        this.clientAttractionCost = clientAttractionCost;
-        this.project = project;
-    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -58,8 +42,7 @@ public class Economic implements Serializable {
     @Column(name = "client_attraction_cost")
     private Double clientAttractionCost;
 
-    @OneToOne(mappedBy = "economic", orphanRemoval = true)
-    private Project project;
+    // TODO: other fields
 
     @Override
     public boolean equals(Object o) {

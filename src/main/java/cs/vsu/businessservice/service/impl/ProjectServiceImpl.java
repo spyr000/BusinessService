@@ -1,7 +1,8 @@
 package cs.vsu.businessservice.service.impl;
 
 import cs.vsu.businessservice.dto.project.ProjectRequest;
-import cs.vsu.businessservice.entity.*;
+import cs.vsu.businessservice.entity.Project;
+import cs.vsu.businessservice.entity.User;
 import cs.vsu.businessservice.exception.EntityNotFoundException;
 import cs.vsu.businessservice.exception.NoAuthHeaderException;
 import cs.vsu.businessservice.exception.UnableToAccessToForeignProjectException;
@@ -36,64 +37,17 @@ public class ProjectServiceImpl implements ProjectService {
         var user = userService.getUser(jwtService.extractUsername(jwtToken));
         var project = Project.builder()
                 .name(projectRequest.getProjectName())
-                .desc(projectRequest.getProjectDesc())
-                .yearsCount(projectRequest.getProjectYearsCount())
-                .lastEditingTime(LocalDateTime.now())
+                .creationTime(LocalDateTime.now())
                 .user(user)
                 .build();
-        var economic = Economic.builder()
-                .project(project)
-                .averagePrice(projectRequest.getEconomicAveragePrice())
-                .clientAttractionCost(projectRequest.getEconomicClientAttractionCost())
-                .clientsAmt(projectRequest.getEconomicClientsAmt())
-                .proceedPercent(projectRequest.getEconomicProceedPercent())
-                .ordersCnt(projectRequest.getEconomicOrdersCnt())
-                .clientsOutflowPercent(projectRequest.getEconomicClientsOutflowPercent())
-                .build();
-        var fixedExpenses = FixedExpenses.builder()
-                .project(project)
-                .officeRentalCost(projectRequest.getFixedExpensesOfficeRentalCost())
-                .incomeTaxPercent(projectRequest.getFixedExpensesIncomeTaxPercent())
-                .insuranceCost(projectRequest.getFixedExpensesInsuranceCost())
-                .marketingCost(projectRequest.getFixedExpensesMarketingCost())
-                .equipmentServiceCost(projectRequest.getFixedExpensesEquipmentServiceCost())
-                .publicUtilitiesCost(projectRequest.getFixedExpensesPublicUtilitiesCost())
-                .wageFundCost(projectRequest.getFixedExpensesWageFundCost())
-                .build();
-        var variableExpenses = VariableExpenses.builder()
-                .project(project)
-                .otherExpensesCost(projectRequest.getVariableExpensesOtherExpensesCost())
-                .logisticsCost(projectRequest.getVariableExpensesLogisticsCost())
-                .officeToolsCost(projectRequest.getVariableExpensesOfficeToolsCost())
-                .equipmentCost(projectRequest.getVariableExpensesEquipmentCost())
-                .build();
-        var investments = Investments.builder()
-                .project(project)
-                .amount(projectRequest.getInvestmentsAmount())
-                .financingCostPercent(projectRequest.getInvestmentsFinancingCostPercent())
-                .showingCost(projectRequest.getInvestmentsShowingCost())
-                .incomeTaxPercent(projectRequest.getInvestmentsIncomeTaxPercent())
-                .conversionToApplicationsPercent(projectRequest.getInvestmentsConversionToApplicationsPercent())
-                .customerGrowth(projectRequest.getInvestmentsCustomerGrowth())
-                .requestsToPurchasesConversionPercent(projectRequest.getInvestmentsRequestsToPurchasesConversionPercent())
-                .customerCost(projectRequest.getInvestmentsCustomerCost())
-                .monthGrowth(projectRequest.getInvestmentsMonthGrowth())
-                .customerServiceCost(projectRequest.getInvestmentsCustomerServiceCost())
-                .build();
-        project.setEconomic(economic);
-        project.setFixedExpenses(fixedExpenses);
-        project.setVariableExpenses(variableExpenses);
-        project.setInvestments(investments);
         projectRepo.save(project);
         return project;
     }
-
     @Override
     public Project getProject(Long id) {
         return projectRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Project.class));
     }
-
     @Override
     public Set<Project> getAllUserProjects(User user) {
         return projectRepo.findByUserId(user.getId());
@@ -123,25 +77,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project editProject(String authHeader, long projectId, ProjectRequest request) {
-        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
-            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED, "No authentication header in request");
-        }
-        var project = getProject(projectId);
-        if (!jwtService.isUserHaveAccessToProject(authHeader, project)) {
-            throw new UnableToAccessToForeignProjectException(
-                    HttpStatus.UNAUTHORIZED,
-                    "You do not have access to this project"
-            );
-        }
-        var modifiedProject = reflectionService.modifyEntity(project,
+    public Project editProject(Project project, ProjectRequest request) {
+        return reflectionService.modifyEntity(project,
                 request,
-                new String[]{"Id"}
+                "project",
+                new String[]{}
         );
-        projectRepo.save(
-            modifiedProject
-        );
-
-        return modifiedProject;
     }
 }
