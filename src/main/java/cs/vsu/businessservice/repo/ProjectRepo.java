@@ -4,12 +4,15 @@ import cs.vsu.businessservice.entity.Project;
 import cs.vsu.businessservice.entity.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public interface ProjectRepo extends JpaRepository<Project, Integer> {
-    Optional<Project> findById(Long id);
+public interface ProjectRepo extends JpaRepository<Project, Long> {
+    @Override
+    @NonNull
+    Optional<Project> findById(@NonNull Long id);
 
     @Transactional
     Set<Project> findByUserId(Long userId);

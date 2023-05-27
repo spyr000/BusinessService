@@ -1,5 +1,6 @@
 package cs.vsu.businessservice.service.security;
 
+import cs.vsu.businessservice.entity.Project;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +13,8 @@ public interface JwtService {
     String generateToken(UserDetails userDetails);
 
     boolean isTokenValid(String token, UserDetails userDetails);
+
+    boolean isUserHaveAccessToProject(String authHeader, Project project);
 
     String extractUsername(String token);
 

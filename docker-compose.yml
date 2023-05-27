@@ -1,0 +1,136 @@
+version: '2.1'
+
+services:
+#  postgres:
+#    container_name: postgres
+##    build:
+##      context: .
+##      dockerfile: Dockerfile
+#    image: postgres:42.5.4
+#    env_file:
+#      - .env
+#    environment:
+#      PGDATA: /data/postgres
+#      DB_URL: jdbc:postgresql://postgres:5432/BusinessService
+#      DB_USERNAME: ${DB_USERNAME}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#    volumes:
+#      - postgres:/data/postgres
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - postgres
+#    restart: unless-stopped
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: zedus123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: BusinessService
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-U", "postgres" ]
+      interval: 5s
+      timeout: 1s
+      retries: 2
+    restart: always
+
+
+  pgadmin:
+    container_name: pgadmin_container
+#    build:
+#      context: BusinessService
+#      dockerfile: Dockerfile
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  spring-boot:
+    image: spring-boot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-boot
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/BusinessService
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: zedus123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    networks:
+      - postgres
+    volumes:
+      - spring-boot:/data/spring-boot
+#    links:
+#      - postgres
+
+
+#  flyway:
+#    container_name: my-flyway
+#    environment:
+#      - FLYWAY_USER=${DB_USERNAME}
+#      - FLYWAY_PASSWORD=${DB_PASSWORD}
+#      - FLYWAY_URL=${DB_URL}
+#      - FLYWAY_SCHEMAS=flyway,public
+#      - FLYWAY_GROUP=true
+#    image: flyway/flyway:latest
+#    command: -locations=filesystem:/flyway/sql -connectRetries=60 migrate
+#    volumes:
+#      - flyway:$PWD/db/migration:/src/main/java/resources/db/migration
+#    depends_on:
+#      - postgres
+#    networks:
+#      - postgres
+
+#  flyway:
+#    image: flyway/flyway:latest
+##    image: boxfuse/flyway:5-alpine
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    env_file:
+#      - .env
+#    command: -user=${DB_USERNAME:-postgres} -password=${DB_PASSWORD:-zedus123} -url=jdbc:postgresql://localhost:5432/BusinessService -locations=filesystem:/flyway/sql -schemas=public -connectRetries=60 migrate
+#    volumes:
+#      - /db/migration:/flyway/sql
+#      - /db/driver:/flyway/drivers
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+##    networks:
+##      - postgres
+#    network_mode: "host"
+#
+##    links:
+##      - postgres
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres-volume:
+  pgadmin:
+#  flyway:
+  spring-boot:

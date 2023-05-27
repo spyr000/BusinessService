@@ -1,6 +1,7 @@
 package cs.vsu.businessservice.service;
 
 import cs.vsu.businessservice.dto.project.ProjectRequest;
+import cs.vsu.businessservice.dto.project.ResultsResponse;
 import cs.vsu.businessservice.entity.Project;
 import cs.vsu.businessservice.entity.User;
 
@@ -16,7 +17,7 @@ public interface ProjectService {
     boolean isProjectNotAccessible(String authHeader, User repoUser);
 
     Project getProject(String authHeader, Long id);
+    Project editProject(String authHeader, long projectId, ProjectRequest request);
 
-
-    Project editProject(Project project, ProjectRequest request);
+//    ResultsResponse getProjectResults(String authHeader, Long projectId);
 }

@@ -17,11 +17,16 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 public class Project implements Serializable {
-
     @Builder
-    public Project(String name, LocalDateTime creationTime, User user) {
+    public Project(String name, String desc, Integer yearsCount, VariableExpenses variableExpenses, Investments investments, FixedExpenses fixedExpenses, Economic economic, LocalDateTime lastEditingTime, User user) {
         this.name = name;
-        this.lastEditingTime = creationTime;
+        this.desc = desc;
+        this.yearsCount = yearsCount;
+        this.variableExpenses = variableExpenses;
+        this.investments = investments;
+        this.fixedExpenses = fixedExpenses;
+        this.economic = economic;
+        this.lastEditingTime = lastEditingTime;
         this.user = user;
     }
 
@@ -39,20 +44,20 @@ public class Project implements Serializable {
     @Column(name = "years_count", nullable = false)
     private Integer yearsCount;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "variable_expenses_id")
+    @OneToOne(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "variable_expenses_id", unique = true)
     private VariableExpenses variableExpenses;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "investment_id")
-    private Investment investment;
+    @OneToOne(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "investments_id", unique = true)
+    private Investments investments;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "fixed_expenses_id")
+    @OneToOne(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "fixed_expenses_id", unique = true)
     private FixedExpenses fixedExpenses;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "economic_id")
+    @OneToOne(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "economic_id", unique = true)
     private Economic economic;
 
     @Column(name = "project_last_editing_time", nullable = false)
@@ -61,8 +66,6 @@ public class Project implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id", unique = false)
     private User user;
-
-    // TODO: other fields
 
     @Override
     public boolean equals(Object o) {

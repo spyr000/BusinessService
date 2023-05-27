@@ -1,6 +1,7 @@
 package cs.vsu.businessservice.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name="fixed_expenses")
+@Table(name = "fixed_expenses")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,7 +31,7 @@ public class FixedExpenses implements Serializable {
     private Double wageFundCost;
 
     @Column(name = "income_tax_percent")
-    private Integer incomeTaxPercent;
+    private Double incomeTaxPercent;
 
     @Column(name = "insurance_cost")
     private Double insuranceCost;
@@ -40,6 +41,29 @@ public class FixedExpenses implements Serializable {
 
     @Column(name = "public_utilities_cost")
     private Double publicUtilitiesCost;
+
+    @OneToOne(mappedBy = "fixedExpenses", orphanRemoval = true)
+    private Project project;
+
+    @Builder
+    public FixedExpenses(Double marketingCost,
+                         Double officeRentalCost,
+                         Double wageFundCost,
+                         Double incomeTaxPercent,
+                         Double insuranceCost,
+                         Double equipmentServiceCost,
+                         Double publicUtilitiesCost,
+                         Project project
+    ) {
+        this.marketingCost = marketingCost;
+        this.officeRentalCost = officeRentalCost;
+        this.wageFundCost = wageFundCost;
+        this.incomeTaxPercent = incomeTaxPercent;
+        this.insuranceCost = insuranceCost;
+        this.equipmentServiceCost = equipmentServiceCost;
+        this.publicUtilitiesCost = publicUtilitiesCost;
+        this.project = project;
+    }
 
     @Override
     public boolean equals(Object o) {
