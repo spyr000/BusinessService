@@ -25,8 +25,8 @@ services:
     image: postgres:latest
     container_name: postgres
     environment:
-      POSTGRES_PASSWORD: zedus123
-      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD:
+      POSTGRES_USER:
       POSTGRES_DB: BusinessService
     volumes:
       - postgres-volume:/var/lib/postgresql/data
@@ -72,8 +72,8 @@ services:
       - .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/BusinessService
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: zedus123
+      SPRING_DATASOURCE_USERNAME:
+      SPRING_DATASOURCE_PASSWORD:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
       - "8080:8080"
@@ -111,7 +111,7 @@ services:
 #      dockerfile: Dockerfile
 #    env_file:
 #      - .env
-#    command: -user=${DB_USERNAME:-postgres} -password=${DB_PASSWORD:-zedus123} -url=jdbc:postgresql://localhost:5432/BusinessService -locations=filesystem:/flyway/sql -schemas=public -connectRetries=60 migrate
+#    command: -user=${DB_USERNAME} -password=${DB_PASSWORD} -url=jdbc:postgresql://localhost:5432/BusinessService -locations=filesystem:/flyway/sql -schemas=public -connectRetries=60 migrate
 #    volumes:
 #      - /db/migration:/flyway/sql
 #      - /db/driver:/flyway/drivers
