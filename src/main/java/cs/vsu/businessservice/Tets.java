@@ -6,26 +6,36 @@ import cs.vsu.businessservice.entity.User;
 import cs.vsu.businessservice.exception.BadGetterOrSetterException;
 import org.springframework.http.HttpStatus;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Tets {
-    public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, UnsupportedEncodingException {
         var user = User.builder().username("sam").email("sam@email").role(Role.USER).password("123").build();
 //        var editingEntity = User.builder().username("ben").password("78788").build();
 //        editingEntity.setProjects(new HashSet<>(List.of(new Project[]{new Project()})));
-        var entity = Project.builder().creationTime(LocalDateTime.now()).user(user).name("GOVNO").build();
-        var editingEntity = Project.builder().creationTime(LocalDateTime.MIN).name("HUINYA").build();
+//        var entity = Project.builder().creationTime(LocalDateTime.now()).user(user).name("GOVNO").build();
+//        var editingEntity = Project.builder().creationTime(LocalDateTime.MIN).name("HUINYA").build();
 //        Field[] fields = Stream
 //                .concat(Arrays.stream(entity.getClass().getSuperclass().getDeclaredFields()),
 //                        Arrays.stream(entity.getClass().getDeclaredFields())).sorted(Comparator.comparing(Field::getName))
 //                .toArray(Field[]::new);
 //        Field[] fields = Arrays.stream(entity.getClass())
 //        System.out.println(Arrays.toString(fields));
-        System.out.println(getModifiedEntity(entity, editingEntity, new String[]{"User"}));
+//        System.out.println(getModifiedEntity(entity, editingEntity, new String[]{"User"}));
+        File currentClass = new File(URLDecoder.decode(BusinessServiceApplication.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getPath(), "UTF-8"));
+        String classDirectory = currentClass.getParent();
+        System.out.println("DIRECTORY! " + classDirectory);
     }
 
     public static <T> T getModifiedEntity(T oldEntity, T editingEntity, String[] staticFields) {
@@ -81,3 +91,34 @@ public class Tets {
         return oldEntity;
     }
 }
+
+
+/*
+* if (!getterName.startsWith(prefix)) {
+                                        if (!getterName.substring(fieldNameIndex)
+                                                .replaceFirst(prefix, "")
+                                                .startsWith("Id")
+                                        ) {
+                                            var entityName = String.valueOf(getterName.charAt(0)).toUpperCase()
+                                                    + getterName.substring(1, getterName.length() - 3);
+                                            var serviceClass = Class.forName(SERVICE_PATH
+                                                    + entityName
+                                                    + "Service"
+                                            );
+                                            var service = serviceClass.cast(context.getBean(serviceClass));
+                                            var entity = returnType.cast(
+                                                    serviceClass
+                                                            .getDeclaredMethod("get" + entityName, returnType)
+                                                            .invoke(service, value)
+                                            );
+
+                                            modifiedClass
+                                                    .getDeclaredMethod("set" + getterName.substring(fieldNameIndex), returnType)
+                                                    .invoke(modifiedEntity, entity);
+                                        }
+                                    } else {
+                                        modifiedClass
+                                                .getDeclaredMethod("set" + getterName.substring(fieldNameIndex), returnType)
+                                                .invoke(modifiedEntity, value);
+                                    }
+* */
