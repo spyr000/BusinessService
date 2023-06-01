@@ -1,0 +1,39 @@
+security:
+  encryption:
+    token-expiration-time-millis: '604800000'
+    key: 2A472D4B6150645367566B59703273357638792F423F4528482B4D6251655468
+spring:
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+  datasource:
+    driverClassName: org.postgresql.Driver
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    #    hikari:
+    #      jdbcUrl: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/BusinessService}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    url: ${SPRING_DATASOURCE_URL}
+  flyway:
+    enabled: false
+  liquibase:
+    enabled: true
+    drop-first: true
+    default-schema: public
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
