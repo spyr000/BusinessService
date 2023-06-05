@@ -1,5 +1,6 @@
 package cs.vsu.businessservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,6 +59,7 @@ public class Economic implements Serializable {
     @Column(name = "client_attraction_cost")
     private Double clientAttractionCost;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "economic", orphanRemoval = true)
     private Project project;
 

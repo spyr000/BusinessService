@@ -1,5 +1,6 @@
 package cs.vsu.businessservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +52,7 @@ public class Investments implements Serializable {
     @Column(name = "customer_service_cost")
     private Double customerServiceCost;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "investments", orphanRemoval = true)
     private Project project;
 

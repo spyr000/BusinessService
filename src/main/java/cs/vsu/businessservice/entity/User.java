@@ -1,5 +1,6 @@
 package cs.vsu.businessservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
@@ -61,6 +62,7 @@ public class User implements Serializable, UserDetails {
     @Column(name="role", nullable = false)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Set<Project> projects = new LinkedHashSet<>();
 

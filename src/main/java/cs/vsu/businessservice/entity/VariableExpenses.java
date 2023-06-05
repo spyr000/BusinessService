@@ -1,5 +1,6 @@
 package cs.vsu.businessservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +49,7 @@ public class VariableExpenses implements Serializable {
     @Column(name = "office_tools_cost")
     private Double officeToolsCost;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "variableExpenses", orphanRemoval = true)
     private Project project;
 

@@ -42,7 +42,6 @@ public class ProjectServiceImpl implements ProjectService {
                 .user(user)
                 .build();
         var economic = Economic.builder()
-                .project(project)
                 .averagePrice(projectRequest.getEconomicAveragePrice())
                 .clientAttractionCost(projectRequest.getEconomicClientAttractionCost())
                 .clientsAmt(projectRequest.getEconomicClientsAmt())
@@ -51,7 +50,6 @@ public class ProjectServiceImpl implements ProjectService {
                 .clientsOutflowPercent(projectRequest.getEconomicClientsOutflowPercent())
                 .build();
         var fixedExpenses = FixedExpenses.builder()
-                .project(project)
                 .officeRentalCost(projectRequest.getFixedExpensesOfficeRentalCost())
                 .incomeTaxPercent(projectRequest.getFixedExpensesIncomeTaxPercent())
                 .insuranceCost(projectRequest.getFixedExpensesInsuranceCost())
@@ -61,14 +59,12 @@ public class ProjectServiceImpl implements ProjectService {
                 .wageFundCost(projectRequest.getFixedExpensesWageFundCost())
                 .build();
         var variableExpenses = VariableExpenses.builder()
-                .project(project)
                 .otherExpensesCost(projectRequest.getVariableExpensesOtherExpensesCost())
                 .logisticsCost(projectRequest.getVariableExpensesLogisticsCost())
                 .officeToolsCost(projectRequest.getVariableExpensesOfficeToolsCost())
                 .equipmentCost(projectRequest.getVariableExpensesEquipmentCost())
                 .build();
         var investments = Investments.builder()
-                .project(project)
                 .amount(projectRequest.getInvestmentsAmount())
                 .financingCostPercent(projectRequest.getInvestmentsFinancingCostPercent())
                 .showingCost(projectRequest.getInvestmentsShowingCost())

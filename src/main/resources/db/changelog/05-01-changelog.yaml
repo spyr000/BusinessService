@@ -384,3 +384,4 @@ databaseChangeLog:
             onUpdate: NO ACTION
             referencedColumnNames: user_id
             referencedTableName: users
+

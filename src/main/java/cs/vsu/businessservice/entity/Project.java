@@ -35,13 +35,13 @@ public class Project implements Serializable {
     @Column(name = "project_id", nullable = false)
     private Long id;
 
-    @Column(name = "project_name", nullable = false)
+    @Column(name = "project_name", nullable = true)
     private String name;
 
     @Column(name = "project_desc")
     private String desc;
 
-    @Column(name = "years_count", nullable = false)
+    @Column(name = "years_count", nullable = true)
     private Integer yearsCount;
 
     @OneToOne(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

@@ -27,25 +27,25 @@ public class ReflectionServiceImpl implements ReflectionService {
 
         Economic economic;
         if (modifiedEntity.getEconomic() == null) {
-            economic = Economic.builder().project(modifiedEntity).build();
+            economic = Economic.builder().build();
         } else {
             economic = modifiedEntity.getEconomic();
         }
         FixedExpenses fixedExpenses;
         if (modifiedEntity.getFixedExpenses() == null) {
-            fixedExpenses = FixedExpenses.builder().project(modifiedEntity).build();
+            fixedExpenses = FixedExpenses.builder().build();
         } else {
             fixedExpenses = modifiedEntity.getFixedExpenses();
         }
         VariableExpenses variableExpenses;
         if (modifiedEntity.getVariableExpenses() == null) {
-            variableExpenses = VariableExpenses.builder().project(modifiedEntity).build();
+            variableExpenses = VariableExpenses.builder().build();
         } else {
             variableExpenses = modifiedEntity.getVariableExpenses();
         }
         Investments investments;
         if (modifiedEntity.getInvestments() == null) {
-            investments = Investments.builder().project(modifiedEntity).build();
+            investments = Investments.builder().build();
         } else {
             investments = modifiedEntity.getInvestments();
         }
