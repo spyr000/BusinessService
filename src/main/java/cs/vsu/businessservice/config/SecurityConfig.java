@@ -1,6 +1,7 @@
 package cs.vsu.businessservice.config;
 
-import cs.vsu.businessservice.security.JwtAuthenticationFilter;
+import cs.vsu.businessservice.filter.ExceptionHandlerFilter;
+import cs.vsu.businessservice.filter.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     private final AuthenticationProvider authenticationProvider;
 
@@ -51,6 +53,7 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
                 .httpBasic();
 
 

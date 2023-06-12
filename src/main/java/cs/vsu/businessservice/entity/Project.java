@@ -41,6 +41,7 @@ public class Project implements Serializable {
     @Column(name = "project_desc")
     private String desc;
 
+//    @Column(name = "project_years_count", nullable = true)
     @Column(name = "years_count", nullable = true)
     private Integer yearsCount;
 

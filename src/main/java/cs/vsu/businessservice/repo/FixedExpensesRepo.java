@@ -11,4 +11,6 @@ public interface FixedExpensesRepo extends JpaRepository<FixedExpenses, Long> {
     @Override
     @NonNull
     Optional<FixedExpenses> findById(@NonNull Long id);
+
+    Optional<FixedExpenses> findFixedExpensesByProjectId(Long projectId);
 }

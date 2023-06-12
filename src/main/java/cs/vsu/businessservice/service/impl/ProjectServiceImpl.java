@@ -1,20 +1,17 @@
 package cs.vsu.businessservice.service.impl;
-
 import cs.vsu.businessservice.dto.project.ProjectRequest;
 import cs.vsu.businessservice.entity.*;
 import cs.vsu.businessservice.exception.EntityNotFoundException;
 import cs.vsu.businessservice.exception.NoAuthHeaderException;
 import cs.vsu.businessservice.exception.UnableToAccessToForeignProjectException;
 import cs.vsu.businessservice.repo.ProjectRepo;
-import cs.vsu.businessservice.service.ProjectService;
-import cs.vsu.businessservice.service.ReflectionService;
-import cs.vsu.businessservice.service.UserService;
+import cs.vsu.businessservice.service.*;
 import cs.vsu.businessservice.service.security.JwtService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -25,13 +22,32 @@ public class ProjectServiceImpl implements ProjectService {
     private final JwtService jwtService;
     private final UserService userService;
     private final ReflectionService reflectionService;
+    private final PdfService pdfService;
+
+    public void checkHeader(String authHeader) {
+        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
+            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED,
+                    "No authentication header in request"
+            );
+        }
+    }
+
+    public Project getProjectIfAccessible(String authHeader, long projectId) {
+        checkHeader(authHeader);
+        var project = getProject(projectId);
+        if (!jwtService.isUserHaveAccessToProject(authHeader, project)) {
+            throw new UnableToAccessToForeignProjectException(
+                    HttpStatus.UNAUTHORIZED,
+                    "You do not have access to this project"
+            );
+        }
+        return project;
+    }
 
     @Transactional(rollbackOn = Exception.class)
     @Override
     public Project add(String authHeader, ProjectRequest projectRequest) {
-        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
-            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED, "No authentication header in request");
-        }
+        checkHeader(authHeader);
         var jwtToken = authHeader.substring(7);
         var user = userService.getUser(jwtService.extractUsername(jwtToken));
         var project = Project.builder()
@@ -120,24 +136,22 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project editProject(String authHeader, long projectId, ProjectRequest request) {
-        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
-            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED, "No authentication header in request");
-        }
-        var project = getProject(projectId);
-        if (!jwtService.isUserHaveAccessToProject(authHeader, project)) {
-            throw new UnableToAccessToForeignProjectException(
-                    HttpStatus.UNAUTHORIZED,
-                    "You do not have access to this project"
-            );
-        }
-        var modifiedProject = reflectionService.modifyEntity(project,
+        var project = getProjectIfAccessible(authHeader, projectId);
+        var modifiedProject = reflectionService.modifyEntity(
+                project,
                 request,
                 new String[]{"Id"}
         );
         projectRepo.save(
-            modifiedProject
+                modifiedProject
         );
 
         return modifiedProject;
+    }
+
+    @Override
+    public void getResults(String authHeader, long projectId, HttpServletResponse response) {
+        var project = getProjectIfAccessible(authHeader, projectId);
+        pdfService.makeResultsPdf(project, response);
     }
 }

@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
 
   spring-boot:
-    image: business-service-spring-boot:latest
+    image: business-service-spring-boot:0.0.1
     build:
       context: .
       dockerfile: Dockerfile

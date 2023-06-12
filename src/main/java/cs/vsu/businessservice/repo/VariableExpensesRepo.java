@@ -8,6 +8,7 @@ import org.springframework.lang.NonNullApi;
 import java.util.Optional;
 
 public interface VariableExpensesRepo extends JpaRepository<VariableExpenses, Long> {
+    Optional<VariableExpenses> findVariableExpensesByProjectId(Long id);
     @Override
     @NonNull
     Optional<VariableExpenses> findById(@NonNull Long id);

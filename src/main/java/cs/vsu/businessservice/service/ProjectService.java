@@ -1,9 +1,9 @@
 package cs.vsu.businessservice.service;
 
 import cs.vsu.businessservice.dto.project.ProjectRequest;
-import cs.vsu.businessservice.dto.project.ResultsResponse;
 import cs.vsu.businessservice.entity.Project;
 import cs.vsu.businessservice.entity.User;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Set;
 
@@ -19,5 +19,5 @@ public interface ProjectService {
     Project getProject(String authHeader, Long id);
     Project editProject(String authHeader, long projectId, ProjectRequest request);
 
-//    ResultsResponse getProjectResults(String authHeader, Long projectId);
+    void getResults(String authHeader, long projectId, HttpServletResponse response);
 }

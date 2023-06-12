@@ -10,4 +10,6 @@ public interface EconomicRepo extends JpaRepository<Economic, Long> {
     @Override
     @NonNull
     Optional<Economic> findById(@NonNull Long id);
+
+    Optional<Economic> findEconomicByProjectId(@NonNull Long projectId);
 }

@@ -2,6 +2,13 @@ security:
   encryption:
     token-expiration-time-millis: '604800000'
     key: 2A472D4B6150645367566B59703273357638792F423F4528482B4D6251655468
+pdf:
+  fonts:
+    directory: src/main/resources/fonts/
+    classic: DejaVuSans.ttf
+    bold: DejaVuSans-Bold.ttf
+    size: '10'
+    encoding: cp1251
 spring:
   jpa:
     database: postgresql

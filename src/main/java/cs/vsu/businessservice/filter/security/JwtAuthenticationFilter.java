@@ -1,5 +1,11 @@
-package cs.vsu.businessservice.security;
+package cs.vsu.businessservice.filter.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cs.vsu.businessservice.exception.ExceptionResponseConstants;
+import cs.vsu.businessservice.exception.InvalidTokenException;
+import cs.vsu.businessservice.exception.NoAuthHeaderException;
+import cs.vsu.businessservice.exception.UnableToWriteExceptionMessageToJsonException;
 import cs.vsu.businessservice.service.security.impl.JwtServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,9 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            LoggerFactory.getLogger(JwtAuthenticationFilter.class).error(e.getMessage(), e);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write(e.getMessage());
         }
 
     }
+
 }
