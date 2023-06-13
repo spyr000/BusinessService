@@ -28,7 +28,7 @@ spring:
   flyway:
     enabled: false
   liquibase:
-    enabled: true
+    enabled: ${SPRING_ENABLE_LIQUIBASE}
     drop-first: true
     default-schema: public
 server:
