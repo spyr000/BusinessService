@@ -1,5 +1,6 @@
 package cs.vsu.businessservice.controller;
 
+import com.google.gson.Gson;
 import cs.vsu.businessservice.dto.project.ProjectRequest;
 import cs.vsu.businessservice.dto.project.ProjectResponse;
 import cs.vsu.businessservice.entity.Project;
@@ -23,6 +24,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
+    private final Gson gson;
     @PostMapping
     public ResponseEntity<ProjectResponse> add(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
@@ -43,12 +45,25 @@ public class ProjectController {
                 .body(project);
     }
 
+//    @PutMapping("/{id}/edit")
+//    public ResponseEntity<?> edit(
+//            @RequestBody ProjectRequest request,
+//            @PathVariable(name = "id") Long projectId,
+//            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+//        var project = projectService.editProject(authHeader, projectId, request);
+//        return ResponseEntity.ok()
+//                .body(ProjectResponse.fromProject(project));
+//    }
     @PutMapping("/{id}/edit")
     public ResponseEntity<?> edit(
-            @RequestBody ProjectRequest request,
+            @RequestBody String json,
             @PathVariable(name = "id") Long projectId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+        var request = gson.fromJson(json, Project.class);
+        System.out.println(request);
         var project = projectService.editProject(authHeader, projectId, request);
+        System.out.println(project);
+//        return ResponseEntity.ok().body(json);
         return ResponseEntity.ok()
                 .body(ProjectResponse.fromProject(project));
     }

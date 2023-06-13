@@ -17,7 +17,9 @@ public interface ProjectService {
     boolean isProjectNotAccessible(String authHeader, User repoUser);
 
     Project getProject(String authHeader, Long id);
-    Project editProject(String authHeader, long projectId, ProjectRequest request);
+//    Project editProject(String authHeader, long projectId, ProjectRequest request);
+
+    Project editProject(String authHeader, long projectId, Project request);
 
     void getResults(String authHeader, long projectId, HttpServletResponse response);
 }

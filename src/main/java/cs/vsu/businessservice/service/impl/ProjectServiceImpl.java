@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -135,18 +136,95 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project editProject(String authHeader, long projectId, ProjectRequest request) {
+    public Project editProject(String authHeader, long projectId, Project request) {
         var project = getProjectIfAccessible(authHeader, projectId);
-        var modifiedProject = reflectionService.modifyEntity(
-                project,
-                request,
-                new String[]{"Id"}
-        );
-        projectRepo.save(
-                modifiedProject
-        );
+        var projectFixedExpenses = project.getFixedExpenses();
+        var projectVariableExpenses = project.getVariableExpenses();
+        var projectEconomic = project.getEconomic();
+        var projectInvestments = project.getInvestments();
+        var description = request.getDesc();
+        var name = request.getName();
+        var yearsCount = request.getYearsCount();
+        var fixedExpenses = request.getFixedExpenses();
+        var fixedExpensesEquipmentServiceCost = fixedExpenses.getEquipmentServiceCost();
+        var fixedExpensesMarketingCost = fixedExpenses.getMarketingCost();
+        var fixedExpensesInsuranceCost = fixedExpenses.getInsuranceCost();
+        var fixedExpensesOfficeRentalCost = fixedExpenses.getOfficeRentalCost();
+        var fixedExpensesPublicUtilitiesCost = fixedExpenses.getPublicUtilitiesCost();
+        var fixedExpensesWageFundCost = fixedExpenses.getWageFundCost();
+        var variableExpenses = request.getVariableExpenses();
+        var variableExpensesEquipmentCost = variableExpenses.getEquipmentCost();
+        var variableExpensesLogisticsCost = variableExpenses.getLogisticsCost();
+        var variableExpensesOfficeToolsCost = variableExpenses.getOfficeToolsCost();
+        var variableExpensesOtherExpensesCost = variableExpenses.getOtherExpensesCost();
+        var economic = request.getEconomic();
+        var economicAvgPrice = economic.getAveragePrice();
+        var economicClientsAttractionCost = economic.getClientAttractionCost();
+        var economicClientsAmt = economic.getClientsAmt();
+        var economicOutflowPercent = economic.getClientsOutflowPercent();
+        var economicOrdersCnt = economic.getOrdersCnt();
+        var economicProceedPercent = economic.getProceedPercent();
+        var investments = request.getInvestments();
+        var investmentsAmount = investments.getAmount();
+        var investmentsConversionToApplicationPercent = investments.getConversionToApplicationsPercent();
+        var investmentsCustomerCost = investments.getCustomerCost();
+        var investmentsCustomerGrowth = investments.getCustomerGrowth();
+        var investmentsCustomerServiceCost = investments.getCustomerServiceCost();
+        var investmentsFinancingCostPercent = investments.getFinancingCostPercent();
+        var investmentsClickConversionPercent = investments.getConversionToApplicationsPercent();
+        var investmentsMonthGrowth = investments.getMonthGrowth();
+        var investmentsRequestsToPurchasesConversionPercent = investments.getRequestsToPurchasesConversionPercent();
+        var investmentsShowingCost = investments.getShowingCost();
+        System.out.println(Optional.ofNullable(fixedExpensesEquipmentServiceCost));
+        Optional.ofNullable(fixedExpensesEquipmentServiceCost).ifPresent(projectFixedExpenses::setEquipmentServiceCost);
+        Optional.ofNullable(fixedExpensesMarketingCost).ifPresent(projectFixedExpenses::setMarketingCost);
+        Optional.ofNullable(fixedExpensesInsuranceCost).ifPresent(projectFixedExpenses::setInsuranceCost);
+        Optional.ofNullable(fixedExpensesOfficeRentalCost).ifPresent(projectFixedExpenses::setOfficeRentalCost);
+        Optional.ofNullable(fixedExpensesPublicUtilitiesCost).ifPresent(projectFixedExpenses::setPublicUtilitiesCost);
+        Optional.ofNullable(fixedExpensesWageFundCost).ifPresent(projectFixedExpenses::setWageFundCost);
+        Optional.ofNullable(economicAvgPrice).ifPresent(projectEconomic::setAveragePrice);
+        Optional.ofNullable(economicClientsAttractionCost).ifPresent(projectEconomic::setClientAttractionCost);
+        Optional.ofNullable(economicClientsAmt).ifPresent(projectEconomic::setClientsAmt);
+        Optional.ofNullable(economicOutflowPercent).ifPresent(projectEconomic::setClientsOutflowPercent);
+        Optional.ofNullable(economicOrdersCnt).ifPresent(projectEconomic::setOrdersCnt);
+        Optional.ofNullable(economicProceedPercent).ifPresent(projectEconomic::setProceedPercent);
+        Optional.ofNullable(variableExpensesLogisticsCost).ifPresent(projectVariableExpenses::setLogisticsCost);
+        Optional.ofNullable(variableExpensesOfficeToolsCost).ifPresent(projectVariableExpenses::setOfficeToolsCost);
+        Optional.ofNullable(variableExpensesEquipmentCost).ifPresent(projectVariableExpenses::setEquipmentCost);
+        Optional.ofNullable(variableExpensesOtherExpensesCost).ifPresent(projectVariableExpenses::setOtherExpensesCost);
+        Optional.ofNullable(investmentsClickConversionPercent).ifPresent(projectInvestments::setConversionToApplicationsPercent);
+        Optional.ofNullable(investmentsAmount).ifPresent(projectInvestments::setAmount);
+        Optional.ofNullable(investmentsCustomerCost).ifPresent(projectInvestments::setCustomerCost);
+        Optional.ofNullable(investmentsConversionToApplicationPercent).ifPresent(projectInvestments::setConversionToApplicationsPercent);
+        Optional.ofNullable(investmentsCustomerServiceCost).ifPresent(projectInvestments::setCustomerServiceCost);
+        Optional.ofNullable(investmentsCustomerGrowth).ifPresent(projectInvestments::setCustomerGrowth);
+        Optional.ofNullable(investmentsFinancingCostPercent).ifPresent(projectInvestments::setFinancingCostPercent);
+        Optional.ofNullable(investmentsMonthGrowth).ifPresent(projectInvestments::setMonthGrowth);
+        Optional.ofNullable(investmentsRequestsToPurchasesConversionPercent).ifPresent(projectInvestments::setRequestsToPurchasesConversionPercent);
+        Optional.ofNullable(investmentsShowingCost).ifPresent(projectInvestments::setShowingCost);
 
-        return modifiedProject;
+        projectInvestments.setProject(project);
+        projectInvestments.setId(investments.getId());
+        projectVariableExpenses.setProject(project);
+        projectVariableExpenses.setId(variableExpenses.getId());
+        projectFixedExpenses.setProject(project);
+        projectFixedExpenses.setId(fixedExpenses.getId());
+        projectEconomic.setProject(project);
+        projectEconomic.setId(economic.getId());
+        project.setUser(request.getUser());
+        project.setId(request.getId());
+        project.setEconomic(projectEconomic);
+        project.setInvestments(projectInvestments);
+        project.setFixedExpenses(projectFixedExpenses);
+        project.setVariableExpenses(projectVariableExpenses);
+
+        project.setLastEditingTime(LocalDateTime.now());
+
+        Optional.ofNullable(description).ifPresent(project::setDesc);
+        Optional.ofNullable(name).ifPresent(project::setName);
+        Optional.ofNullable(yearsCount).ifPresent(project::setYearsCount);
+        projectRepo.save(project);
+        return project;
     }
 
     @Override

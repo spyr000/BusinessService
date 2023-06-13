@@ -21,7 +21,6 @@ services:
       retries: 2
     restart: always
 
-
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -53,12 +52,25 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       SPRING_ENABLE_LIQUIBASE: ${SPRING_ENABLE_LIQUIBASE}
+      SPRING_ENABLE_LIQUIBASE_DROP_FIRST: ${SPRING_ENABLE_LIQUIBASE_DROP_FIRST}
     ports:
       - "8080:8080"
       - "5005:5005"
     volumes:
       - spring-boot:/data/spring-boot
 
+#  jenkins:
+#    image: jenkins/jenkins:lts
+#    privileged: true
+#    user: root
+#    ports:
+#      - 8081:8080
+#      - 50000:50000
+#    container_name: jenkins
+#    volumes:
+#      - ~/jenkins:/var/jenkins_home
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - /usr/local/bin/docker:/usr/local/bin/docker
 
 volumes:
   postgres-volume:

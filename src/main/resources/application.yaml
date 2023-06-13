@@ -29,7 +29,7 @@ spring:
     enabled: false
   liquibase:
     enabled: ${SPRING_ENABLE_LIQUIBASE}
-    drop-first: true
+    drop-first: ${SPRING_ENABLE_LIQUIBASE_DROP_FIRST}
     default-schema: public
 server:
   error:
