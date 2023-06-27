@@ -1,17 +1,15 @@
 package cs.vsu.businessservice.service.impl;
 
+import cs.vsu.businessservice.dto.result.doubleresults.DoubleResultsData;
+import cs.vsu.businessservice.dto.result.doubleresults.DoubleResultsResponse;
+import cs.vsu.businessservice.dto.result.investmentsresults.InvestmentsResultsData;
+import cs.vsu.businessservice.dto.result.investmentsresults.InvestmentsResultsResponse;
 import cs.vsu.businessservice.dto.result.normalresults.NormalResultsData;
 import cs.vsu.businessservice.dto.result.normalresults.NormalResultsPercents;
 import cs.vsu.businessservice.dto.result.normalresults.NormalResultsResponse;
-import cs.vsu.businessservice.entity.Economic;
-import cs.vsu.businessservice.entity.FixedExpenses;
-import cs.vsu.businessservice.entity.Project;
-import cs.vsu.businessservice.entity.VariableExpenses;
+import cs.vsu.businessservice.entity.*;
 import cs.vsu.businessservice.exception.EntityNotFoundException;
-import cs.vsu.businessservice.repo.EconomicRepo;
-import cs.vsu.businessservice.repo.FixedExpensesRepo;
-import cs.vsu.businessservice.repo.ProjectRepo;
-import cs.vsu.businessservice.repo.VariableExpensesRepo;
+import cs.vsu.businessservice.repo.*;
 import cs.vsu.businessservice.service.ResultsCalculatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,9 +24,11 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
     private final EconomicRepo economicRepo;
     private final FixedExpensesRepo fixedExpensesRepo;
     private final VariableExpensesRepo variableExpensesRepo;
+    private final InvestmentsRepo investmentsRepo;
 
     @Override
     public NormalResultsResponse calculateNormalResults(long projectId) {
+
         var economic = economicRepo.findEconomicByProjectId(projectId).orElseThrow(
                 () -> new EntityNotFoundException(Economic.class)
         );
@@ -40,10 +40,10 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
         );
 
         var normalResultsData = new NormalResultsData();
-        var proceedPercent = Optional.of(economic.getProceedPercent()).orElse(0.);
-        var income = Optional.of(economic.getAveragePrice()).orElse(0.)
-                * Optional.of(economic.getClientsAmt()).orElse(0L).doubleValue()
-                * Optional.of(economic.getOrdersCnt()).orElse(0L).doubleValue();
+        var proceedPercent = Optional.ofNullable(economic.getProceedPercent()).orElse(0.);
+        var income = Optional.ofNullable(economic.getAveragePrice()).orElse(0.)
+                * Optional.ofNullable(economic.getClientsAmt()).orElse(0L).doubleValue()
+                * Optional.ofNullable(economic.getOrdersCnt()).orElse(0L).doubleValue();
         var costPrice = income * proceedPercent / 100;
         var coefficient = projectRepo
                 .findById(projectId)
@@ -54,22 +54,22 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
         var grossProfit = income - costPrice;
         //TODO: Где?
         var amortization = 0.;
-        var fot = (double) Optional.of(
+        var fot = (double) Optional.ofNullable(
                 fixedExpenses.getWageFundCost()
         ).orElse(0.);
-        var logistics = (double) Optional.of(
+        var logistics = (double) Optional.ofNullable(
                 variableExpenses.getLogisticsCost() * coefficient
         ).orElse(0.);
-        var marketingAndAdvertising = (double) Optional.of(
+        var marketingAndAdvertising = (double) Optional.ofNullable(
                 fixedExpenses.getMarketingCost() * coefficient
         ).orElse(0.);
-        var rent = (double) Optional.of(
+        var rent = (double) Optional.ofNullable(
                 fixedExpenses.getOfficeRentalCost() * coefficient
         ).orElse(0.);
-        var otherExpenses = (double) Optional.of(
+        var otherExpenses = (double) Optional.ofNullable(
                 variableExpenses.getOtherExpensesCost() * coefficient
         ).orElse(0.);
-        var profitBeforeTax = (double) Optional.of(
+        var profitBeforeTax = (double) Optional.ofNullable(
                 grossProfit
                 - logistics
                 - marketingAndAdvertising
@@ -78,15 +78,14 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
                 - amortization
                 - fot
         ).orElse(0.);
-        var tax = (double) Optional.of(
+        var tax = (double) Optional.ofNullable(
                 profitBeforeTax * fixedExpenses.getIncomeTaxPercent() / 100
         ).orElse(0.);
-        var netProfit = (double) Optional.of(profitBeforeTax - tax).orElse(0.);
+        var netProfit = (double) Optional.ofNullable(profitBeforeTax - tax).orElse(0.);
 
         normalResultsData.setIncome(income);
         normalResultsData.setCostPrice(costPrice);
         normalResultsData.setGrossProfit(grossProfit);
-        normalResultsData.setAmortization(amortization);
         normalResultsData.setFot(fot * coefficient);
         normalResultsData.setLogistics(logistics);
         normalResultsData.setMarketingAndAdvertising(marketingAndAdvertising);
@@ -101,7 +100,6 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
         normalResultsPercents.setIncomePercent(100.);
         normalResultsPercents.setCostPricePercent(proceedPercent);
         normalResultsPercents.setGrossProfitPercent(100. - proceedPercent);
-        normalResultsPercents.setAmortizationPercent(amortization / income * 100);
         normalResultsPercents.setFotPercent(fot / income * 100);
         normalResultsPercents.setLogisticsPercent(logistics / income * 100);
         normalResultsPercents.setOtherExpensesPercent(otherExpenses / income * 100);
@@ -113,6 +111,73 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
         var result = new NormalResultsResponse();
         result.setNormalResultsData(normalResultsData);
         result.setNormalResultsPercents(normalResultsPercents);
+        result.setProjectId(projectId);
+        return result;
+    }
+
+    @Override
+    public DoubleResultsResponse calculateDoubleResults(long projectId) {
+
+        var economic = economicRepo.findEconomicByProjectId(projectId).orElseThrow(
+                () -> new EntityNotFoundException(Economic.class)
+        );
+        var variableExpenses = variableExpensesRepo.findVariableExpensesByProjectId(projectId).orElseThrow(
+                () -> new EntityNotFoundException(VariableExpenses.class)
+        );
+        var fixedExpenses = fixedExpensesRepo.findFixedExpensesByProjectId(projectId).orElseThrow(
+                () -> new EntityNotFoundException(FixedExpenses.class)
+        );
+//        var investments = investmentsRepo.findInvestmentsByProjectId(projectId).orElseThrow(
+//                () -> new EntityNotFoundException(Investments.class)
+//        );
+
+        var doubleResultsData = new DoubleResultsData();
+        var retainingNewCustomers = Optional.ofNullable(economic.getClientAttractionCost() * economic.getClientsAmt() * economic.getClientsOutflowPercent() * 12. / 100.).orElse(0.);
+        var newEquipmentCost = Optional.ofNullable(fixedExpenses.getEquipmentServiceCost()).orElse(0.);
+        var newLogisticsCost = Optional.ofNullable(variableExpenses.getLogisticsCost()).orElse(0.);
+        var newWageFundCost = Optional.ofNullable(fixedExpenses.getWageFundCost() * 0.5).orElse(0.);
+        var minInvestment = Optional.ofNullable(retainingNewCustomers + newEquipmentCost + newLogisticsCost + newWageFundCost).orElse(0.);
+        var amortization = 0.;
+        doubleResultsData.setLogisticsCost(newLogisticsCost);
+        doubleResultsData.setFotIncreasingCost(newWageFundCost);
+        doubleResultsData.setNewEquipmentCost(newEquipmentCost);
+        doubleResultsData.setRetentionOfNewCustomersCost(retainingNewCustomers);
+        doubleResultsData.setMinimalInvestments(minInvestment);
+
+        var result = new DoubleResultsResponse();
+        result.setDoubleResultsData(doubleResultsData);
+        result.setProjectId(projectId);
+        return result;
+    }
+
+    @Override
+    public InvestmentsResultsResponse calculateInvestmentsResults(long projectId) {
+        var investments = investmentsRepo.findInvestmentsByProjectId(projectId).orElseThrow(
+                () -> new EntityNotFoundException(Investments.class)
+        );
+
+        var investmentsResultsData = new InvestmentsResultsData();
+        var costBroughtCustomer = Optional.ofNullable(investments.getClickConversionPercent()
+                * investments.getConversionToApplicationsPercent()
+                * investments.getRequestsToPurchasesConversionPercent() * investments.getShowingCost() / 100000.)
+                .orElse(0.);
+        var recruitmentCostsClient = Optional.ofNullable(costBroughtCustomer
+                * investments.getCustomerGrowth())
+                .orElse(0.);
+        var subscriberAcquisitionCosts = Optional.ofNullable(investments.getCustomerCost()
+                        * investments.getMonthGrowth())
+                .orElse(0.);
+        var marketingExpenses = Optional.ofNullable(subscriberAcquisitionCosts
+                        + recruitmentCostsClient)
+                .orElse(0.);
+        investmentsResultsData.setMarketingExpenses(marketingExpenses);
+        investmentsResultsData.setRecruitmentCostsClient(recruitmentCostsClient);
+        investmentsResultsData.setCostBroughtCustomer(costBroughtCustomer);
+        investmentsResultsData.setSubscriberAcquisitionCosts(subscriberAcquisitionCosts);
+
+        var result = new InvestmentsResultsResponse();
+        result.setInvestmentsResultsData(investmentsResultsData);
+        result.setProjectId(projectId);
         return result;
     }
 }

@@ -1,8 +1,6 @@
 package cs.vsu.businessservice.controller;
 
 
-import cs.vsu.businessservice.entity.User;
-import cs.vsu.businessservice.repo.UserRepo;
 import cs.vsu.businessservice.service.ProjectService;
 import cs.vsu.businessservice.service.UserService;
 import lombok.RequiredArgsConstructor;

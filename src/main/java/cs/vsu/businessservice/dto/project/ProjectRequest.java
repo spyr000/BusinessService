@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -45,7 +43,7 @@ public class ProjectRequest {
     private Double investmentsAmount;
     private Double investmentsFinancingCostPercent;
     private Double investmentsShowingCost;
-    private Double investmentsIncomeTaxPercent;
+    private Double investmentsClickConversionPercent;
     private Double investmentsConversionToApplicationsPercent;
     private Integer investmentsCustomerGrowth;
     private Double investmentsCustomerCost;

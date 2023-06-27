@@ -1,7 +1,6 @@
 package cs.vsu.businessservice.repo;
 
 import cs.vsu.businessservice.entity.FixedExpenses;
-import cs.vsu.businessservice.entity.VariableExpenses;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 

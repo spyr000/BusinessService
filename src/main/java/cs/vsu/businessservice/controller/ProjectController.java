@@ -8,7 +8,6 @@ import cs.vsu.businessservice.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,10 +59,7 @@ public class ProjectController {
             @PathVariable(name = "id") Long projectId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
         var request = gson.fromJson(json, Project.class);
-        System.out.println(request);
         var project = projectService.editProject(authHeader, projectId, request);
-        System.out.println(project);
-//        return ResponseEntity.ok().body(json);
         return ResponseEntity.ok()
                 .body(ProjectResponse.fromProject(project));
     }
@@ -74,9 +70,6 @@ public class ProjectController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
             HttpServletResponse response
     ) {
-        System.out.println(projectId);
-        System.out.println(authHeader);
-        System.out.println(response);
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
@@ -85,6 +78,14 @@ public class ProjectController {
         response.setHeader(headerKey, headerValue);
 
         projectService.getResults(authHeader, projectId, response);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> delete(
+            @PathVariable(name = "id") Long projectId,
+    @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+        projectService.deleteProject(authHeader,projectId);
+        return ResponseEntity.ok().build();
     }
 }
 

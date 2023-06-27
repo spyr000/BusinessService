@@ -5,7 +5,6 @@ import cs.vsu.businessservice.exception.BadGetterOrSetterException;
 import cs.vsu.businessservice.exception.ParseJsonException;
 import cs.vsu.businessservice.service.ReflectionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

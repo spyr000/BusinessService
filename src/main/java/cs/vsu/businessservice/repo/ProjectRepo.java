@@ -1,7 +1,6 @@
 package cs.vsu.businessservice.repo;
 
 import cs.vsu.businessservice.entity.Project;
-import cs.vsu.businessservice.entity.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;

@@ -22,4 +22,6 @@ public interface ProjectService {
     Project editProject(String authHeader, long projectId, Project request);
 
     void getResults(String authHeader, long projectId, HttpServletResponse response);
+
+    void deleteProject(String authHeader, long projectId);
 }

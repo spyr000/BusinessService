@@ -5,7 +5,6 @@ import cs.vsu.businessservice.exception.EntityNotFoundException;
 import cs.vsu.businessservice.repo.UserRepo;
 import cs.vsu.businessservice.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

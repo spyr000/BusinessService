@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
 
   spring-boot:
-    image: business-service-spring-boot:0.0.1
+    image: business-service-spring-boot:0.0.5
     build:
       context: .
       dockerfile: Dockerfile
@@ -53,11 +53,13 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       SPRING_ENABLE_LIQUIBASE: ${SPRING_ENABLE_LIQUIBASE}
       SPRING_ENABLE_LIQUIBASE_DROP_FIRST: ${SPRING_ENABLE_LIQUIBASE_DROP_FIRST}
+      DOCKER_FONTS_DIRECTORY: ${DOCKER_FONTS_DIRECTORY}
     ports:
       - "8080:8080"
       - "5005:5005"
     volumes:
       - spring-boot:/data/spring-boot
+      - ./src/main/resources/fonts/:${DOCKER_FONTS_DIRECTORY}
 
 #  jenkins:
 #    image: jenkins/jenkins:lts

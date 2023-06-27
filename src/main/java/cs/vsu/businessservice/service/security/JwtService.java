@@ -19,6 +19,4 @@ public interface JwtService {
     String extractUsername(String token);
 
     <T> T extractClaim(String token, Function<Claims, T> claimsExtractor);
-
-    boolean isAuthHeaderSuitable(String authHeader);
 }

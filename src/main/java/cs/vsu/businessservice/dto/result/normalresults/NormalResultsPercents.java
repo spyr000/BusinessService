@@ -14,7 +14,6 @@ public class NormalResultsPercents {
     private Double rentPercent;
     private Double logisticsPercent;
     private Double fotPercent;
-    private Double amortizationPercent;
     private Double otherExpensesPercent;
     private Double incomeTaxPercent;
     private Double netProfitPercent;
@@ -28,7 +27,6 @@ public class NormalResultsPercents {
                 this.rentPercent,
                 this.logisticsPercent,
                 this.fotPercent,
-                this.amortizationPercent,
                 this.otherExpensesPercent,
                 this.incomeTaxPercent,
                 this.netProfitPercent

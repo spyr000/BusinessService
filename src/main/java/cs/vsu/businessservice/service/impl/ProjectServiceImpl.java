@@ -1,8 +1,8 @@
 package cs.vsu.businessservice.service.impl;
 import cs.vsu.businessservice.dto.project.ProjectRequest;
 import cs.vsu.businessservice.entity.*;
+import cs.vsu.businessservice.exception.BaseException;
 import cs.vsu.businessservice.exception.EntityNotFoundException;
-import cs.vsu.businessservice.exception.NoAuthHeaderException;
 import cs.vsu.businessservice.exception.UnableToAccessToForeignProjectException;
 import cs.vsu.businessservice.repo.ProjectRepo;
 import cs.vsu.businessservice.service.*;
@@ -25,16 +25,16 @@ public class ProjectServiceImpl implements ProjectService {
     private final ReflectionService reflectionService;
     private final PdfService pdfService;
 
-    public void checkHeader(String authHeader) {
-        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
-            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED,
-                    "No authentication header in request"
-            );
-        }
-    }
+//    public void checkHeader(String authHeader) {
+//        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
+//            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED,
+//                    "No authentication header in request"
+//            );
+//        }
+//    }
 
     public Project getProjectIfAccessible(String authHeader, long projectId) {
-        checkHeader(authHeader);
+//        checkHeader(authHeader);
         var project = getProject(projectId);
         if (!jwtService.isUserHaveAccessToProject(authHeader, project)) {
             throw new UnableToAccessToForeignProjectException(
@@ -48,7 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(rollbackOn = Exception.class)
     @Override
     public Project add(String authHeader, ProjectRequest projectRequest) {
-        checkHeader(authHeader);
+//        checkHeader(authHeader);
         var jwtToken = authHeader.substring(7);
         var user = userService.getUser(jwtService.extractUsername(jwtToken));
         var project = Project.builder()
@@ -85,7 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .amount(projectRequest.getInvestmentsAmount())
                 .financingCostPercent(projectRequest.getInvestmentsFinancingCostPercent())
                 .showingCost(projectRequest.getInvestmentsShowingCost())
-                .incomeTaxPercent(projectRequest.getInvestmentsIncomeTaxPercent())
+                .clickConversionPercent(projectRequest.getInvestmentsClickConversionPercent())
                 .conversionToApplicationsPercent(projectRequest.getInvestmentsConversionToApplicationsPercent())
                 .customerGrowth(projectRequest.getInvestmentsCustomerGrowth())
                 .requestsToPurchasesConversionPercent(projectRequest.getInvestmentsRequestsToPurchasesConversionPercent())
@@ -120,9 +120,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project getProject(String authHeader, Long id) {
-        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
-            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED, "No authentication header in request");
-        }
+//        if (!jwtService.isAuthHeaderSuitable(authHeader)) {
+//            throw new NoAuthHeaderException(HttpStatus.UNAUTHORIZED, "No authentication header in request");
+//        }
 
         var project = getProject(id);
         var username = project.getUser().getUsername();
@@ -152,6 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
         var fixedExpensesOfficeRentalCost = fixedExpenses.getOfficeRentalCost();
         var fixedExpensesPublicUtilitiesCost = fixedExpenses.getPublicUtilitiesCost();
         var fixedExpensesWageFundCost = fixedExpenses.getWageFundCost();
+        var fixedExpensesIncomeTaxPercent = fixedExpenses.getIncomeTaxPercent();
         var variableExpenses = request.getVariableExpenses();
         var variableExpensesEquipmentCost = variableExpenses.getEquipmentCost();
         var variableExpensesLogisticsCost = variableExpenses.getLogisticsCost();
@@ -171,17 +172,19 @@ public class ProjectServiceImpl implements ProjectService {
         var investmentsCustomerGrowth = investments.getCustomerGrowth();
         var investmentsCustomerServiceCost = investments.getCustomerServiceCost();
         var investmentsFinancingCostPercent = investments.getFinancingCostPercent();
-        var investmentsClickConversionPercent = investments.getConversionToApplicationsPercent();
+        var investmentsClickConversionPercent = investments.getClickConversionPercent();
         var investmentsMonthGrowth = investments.getMonthGrowth();
         var investmentsRequestsToPurchasesConversionPercent = investments.getRequestsToPurchasesConversionPercent();
         var investmentsShowingCost = investments.getShowingCost();
-        System.out.println(Optional.ofNullable(fixedExpensesEquipmentServiceCost));
+//        investments.getIncomeTaxPercent();
+
         Optional.ofNullable(fixedExpensesEquipmentServiceCost).ifPresent(projectFixedExpenses::setEquipmentServiceCost);
         Optional.ofNullable(fixedExpensesMarketingCost).ifPresent(projectFixedExpenses::setMarketingCost);
         Optional.ofNullable(fixedExpensesInsuranceCost).ifPresent(projectFixedExpenses::setInsuranceCost);
         Optional.ofNullable(fixedExpensesOfficeRentalCost).ifPresent(projectFixedExpenses::setOfficeRentalCost);
         Optional.ofNullable(fixedExpensesPublicUtilitiesCost).ifPresent(projectFixedExpenses::setPublicUtilitiesCost);
         Optional.ofNullable(fixedExpensesWageFundCost).ifPresent(projectFixedExpenses::setWageFundCost);
+        Optional.ofNullable(fixedExpensesIncomeTaxPercent).ifPresent(projectFixedExpenses::setIncomeTaxPercent);
         Optional.ofNullable(economicAvgPrice).ifPresent(projectEconomic::setAveragePrice);
         Optional.ofNullable(economicClientsAttractionCost).ifPresent(projectEconomic::setClientAttractionCost);
         Optional.ofNullable(economicClientsAmt).ifPresent(projectEconomic::setClientsAmt);
@@ -192,7 +195,7 @@ public class ProjectServiceImpl implements ProjectService {
         Optional.ofNullable(variableExpensesOfficeToolsCost).ifPresent(projectVariableExpenses::setOfficeToolsCost);
         Optional.ofNullable(variableExpensesEquipmentCost).ifPresent(projectVariableExpenses::setEquipmentCost);
         Optional.ofNullable(variableExpensesOtherExpensesCost).ifPresent(projectVariableExpenses::setOtherExpensesCost);
-        Optional.ofNullable(investmentsClickConversionPercent).ifPresent(projectInvestments::setConversionToApplicationsPercent);
+        Optional.ofNullable(investmentsClickConversionPercent).ifPresent(projectInvestments::setClickConversionPercent);
         Optional.ofNullable(investmentsAmount).ifPresent(projectInvestments::setAmount);
         Optional.ofNullable(investmentsCustomerCost).ifPresent(projectInvestments::setCustomerCost);
         Optional.ofNullable(investmentsConversionToApplicationPercent).ifPresent(projectInvestments::setConversionToApplicationsPercent);
@@ -203,26 +206,26 @@ public class ProjectServiceImpl implements ProjectService {
         Optional.ofNullable(investmentsRequestsToPurchasesConversionPercent).ifPresent(projectInvestments::setRequestsToPurchasesConversionPercent);
         Optional.ofNullable(investmentsShowingCost).ifPresent(projectInvestments::setShowingCost);
 
-        projectInvestments.setProject(project);
-        projectInvestments.setId(investments.getId());
-        projectVariableExpenses.setProject(project);
-        projectVariableExpenses.setId(variableExpenses.getId());
-        projectFixedExpenses.setProject(project);
-        projectFixedExpenses.setId(fixedExpenses.getId());
-        projectEconomic.setProject(project);
-        projectEconomic.setId(economic.getId());
-        project.setUser(request.getUser());
-        project.setId(request.getId());
-        project.setEconomic(projectEconomic);
-        project.setInvestments(projectInvestments);
-        project.setFixedExpenses(projectFixedExpenses);
-        project.setVariableExpenses(projectVariableExpenses);
+//        projectInvestments.setProject(project);
+////        projectInvestments.setId(investments.getId());
+//        projectVariableExpenses.setProject(project);
+////        projectVariableExpenses.setId(variableExpenses.getId());
+//        projectFixedExpenses.setProject(project);
+////        projectFixedExpenses.setId(fixedExpenses.getId());
+//        projectEconomic.setProject(project);
+////        projectEconomic.setId(economic.getId());
+//        project.setUser(request.getUser());
+//        project.setId(request.getId());
+//        project.setEconomic(projectEconomic);
+//        project.setInvestments(projectInvestments);
+//        project.setFixedExpenses(projectFixedExpenses);
+//        project.setVariableExpenses(projectVariableExpenses);
 
         project.setLastEditingTime(LocalDateTime.now());
 
-        Optional.ofNullable(description).ifPresent(project::setDesc);
-        Optional.ofNullable(name).ifPresent(project::setName);
-        Optional.ofNullable(yearsCount).ifPresent(project::setYearsCount);
+//        Optional.ofNullable(description).ifPresent(project::setDesc);
+//        Optional.ofNullable(name).ifPresent(project::setName);
+//        Optional.ofNullable(yearsCount).ifPresent(project::setYearsCount);
         projectRepo.save(project);
         return project;
     }
@@ -231,5 +234,15 @@ public class ProjectServiceImpl implements ProjectService {
     public void getResults(String authHeader, long projectId, HttpServletResponse response) {
         var project = getProjectIfAccessible(authHeader, projectId);
         pdfService.makeResultsPdf(project, response);
+    }
+
+    @Override
+    public void deleteProject(String authHeader, long projectId) {
+        try {
+            projectRepo.deleteById(projectId);
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
     }
 }

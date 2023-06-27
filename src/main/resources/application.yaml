@@ -4,10 +4,13 @@ security:
     key: 2A472D4B6150645367566B59703273357638792F423F4528482B4D6251655468
 pdf:
   fonts:
-    directory: src/main/resources/fonts/
+    directory: ${DOCKER_FONTS_DIRECTORY} #src/main/resources/fonts/
+
     classic: DejaVuSans.ttf
     bold: DejaVuSans-Bold.ttf
     size: '10'
+    title_size: '20'
+    subtitle_size: '16'
     encoding: cp1251
 spring:
   jpa:

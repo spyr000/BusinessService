@@ -32,7 +32,7 @@ public class Investments implements Serializable {
     private Double showingCost;
 
     @Column(name = "click_conversion_percent")
-    private Double incomeTaxPercent;
+    private Double clickConversionPercent;
 
     @Column(name = "conversion_to_applications_percent")
     private Double conversionToApplicationsPercent;
@@ -60,7 +60,7 @@ public class Investments implements Serializable {
     public Investments(Double amount,
                        Double financingCostPercent,
                        Double showingCost,
-                       Double incomeTaxPercent,
+                       Double clickConversionPercent,
                        Double conversionToApplicationsPercent,
                        Integer customerGrowth,
                        Double customerCost,
@@ -72,7 +72,7 @@ public class Investments implements Serializable {
         this.amount = amount;
         this.financingCostPercent = financingCostPercent;
         this.showingCost = showingCost;
-        this.incomeTaxPercent = incomeTaxPercent;
+        this.clickConversionPercent = clickConversionPercent;
         this.conversionToApplicationsPercent = conversionToApplicationsPercent;
         this.customerGrowth = customerGrowth;
         this.customerCost = customerCost;

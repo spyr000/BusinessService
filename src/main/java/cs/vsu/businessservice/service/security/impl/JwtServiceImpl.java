@@ -1,7 +1,6 @@
 package cs.vsu.businessservice.service.security.impl;
 
 import cs.vsu.businessservice.entity.Project;
-import cs.vsu.businessservice.service.UserService;
 import cs.vsu.businessservice.service.security.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +9,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -107,8 +105,8 @@ public class JwtServiceImpl implements JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    @Override
-    public boolean isAuthHeaderSuitable(String authHeader) {
-        return authHeader != null && authHeader.startsWith("Bearer ");
-    }
+//    @Override
+//    public boolean isAuthHeaderSuitable(String authHeader) {
+//        return authHeader != null && authHeader.startsWith("Bearer ");
+//    }
 }
