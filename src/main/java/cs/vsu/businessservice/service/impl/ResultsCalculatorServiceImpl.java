@@ -52,7 +52,6 @@ public class ResultsCalculatorServiceImpl implements ResultsCalculatorService {
                 ).getYearsCount()
                 * 12.;
         var grossProfit = income - costPrice;
-        //TODO: Где?
         var amortization = 0.;
         var fot = (double) Optional.ofNullable(
                 fixedExpenses.getWageFundCost()

@@ -1,15 +1,21 @@
 package cs.vsu.businessservice.advice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cs.vsu.businessservice.exception.BaseException;
 import cs.vsu.businessservice.exception.ErrorMessage;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -18,8 +24,14 @@ import java.security.SignatureException;
 import java.time.LocalDateTime;
 
 @Slf4j
+@RequiredArgsConstructor
 @ControllerAdvice
 public class BusinessServiceControllerAdvice {
+    @Value("${spring.mvc.contentnegotiation.parameter-name}")
+    private String formatParameterName;
+
+    private final ObjectMapper objectMapper;
+
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorMessage> handleException(
             BaseException e, WebRequest request
@@ -123,20 +135,45 @@ public class BusinessServiceControllerAdvice {
                 .message(e.getMessage())
                 .description(request.getDescription(false))
                 .time(LocalDateTime.now())
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .build();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(message);
     }
 
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<String> handleException(
+            HttpMediaTypeNotAcceptableException e, WebRequest request
+    ) throws JsonProcessingException {
+        var messageText = request.getParameter(formatParameterName) + "MIME type not supported as a content negotiation type";
+        log.error(messageText, e);
+        var message = ErrorMessage.builder()
+                .message(messageText)
+                .description(request.getDescription(false))
+                .time(LocalDateTime.now())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(objectMapper.writeValueAsString(message));
+    }
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<String> handleException(Throwable e) {
+    public ResponseEntity<ErrorMessage> handleException(
+            Throwable e, WebRequest request
+    ) {
         log.error(e.getMessage(), e);
+        var message = ErrorMessage.builder()
+                .message(e.getMessage())
+                .description(request.getDescription(false))
+                .time(LocalDateTime.now())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .build();
         return ResponseEntity
-                .internalServerError()
-                .body(e.getMessage());
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(message);
     }
 }
 

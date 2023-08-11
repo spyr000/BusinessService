@@ -1,3 +1,5 @@
+application-description: a
+application-version: b
 security:
   encryption:
     token-expiration-time-millis: '604800000'
@@ -28,19 +30,32 @@ spring:
     #      jdbcUrl: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/BusinessService}
     username: ${SPRING_DATASOURCE_USERNAME}
     url: ${SPRING_DATASOURCE_URL}
-  flyway:
-    enabled: false
   liquibase:
     enabled: ${SPRING_ENABLE_LIQUIBASE}
     drop-first: ${SPRING_ENABLE_LIQUIBASE_DROP_FIRST}
     default-schema: public
+  mvc:
+    contentnegotiation:
+      parameter-name: "format"
+      default-type: application/json
+
 server:
   error:
     include-binding-errors: always
     include-message: always
-#logging:
-#  level:
-#    org:
+# Specify the path of the OpenAPI documentation
+springdoc:
+#  api-docs.path: /api-docs
+  # Specify the path of the Swagger UI
+  swagger-ui:
+    path: /swagger-ui.html
+  # Enable or disable Swagger UI
+    enabled: true
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
 #      hibernate:
 #        SQL: DEBUG
 #        type:

@@ -15,7 +15,10 @@ public class UserController {
     private final UserService userService;
     private final ProjectService projectService;
 
-    @GetMapping("/{username}/projects")
+    @GetMapping(
+            value = "/{username}/projects",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<?> getUserProjects(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
             @PathVariable(name = "username") String username

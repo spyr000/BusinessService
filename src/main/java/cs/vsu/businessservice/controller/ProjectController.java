@@ -24,7 +24,9 @@ import java.util.Date;
 public class ProjectController {
     private final ProjectService projectService;
     private final Gson gson;
-    @PostMapping
+    @PostMapping(
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<ProjectResponse> add(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody ProjectRequest projectRequest
@@ -35,7 +37,10 @@ public class ProjectController {
                 .body(ProjectResponse.fromProject(project));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(
+            value="/{id}",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<Project> get(
             @PathVariable(name = "id") Long projectId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
@@ -53,7 +58,10 @@ public class ProjectController {
 //        return ResponseEntity.ok()
 //                .body(ProjectResponse.fromProject(project));
 //    }
-    @PutMapping("/{id}/edit")
+    @PutMapping(
+            value ="/{id}/edit",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<?> edit(
             @RequestBody String json,
             @PathVariable(name = "id") Long projectId,
@@ -64,7 +72,10 @@ public class ProjectController {
                 .body(ProjectResponse.fromProject(project));
     }
 
-    @GetMapping("/{id}/results")
+    @GetMapping(
+            value ="/{id}/results",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public void getResults(
             @PathVariable(name = "id") Long projectId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
@@ -80,7 +91,10 @@ public class ProjectController {
         projectService.getResults(authHeader, projectId, response);
     }
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping(
+            value ="/{id}/delete",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<?> delete(
             @PathVariable(name = "id") Long projectId,
     @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {

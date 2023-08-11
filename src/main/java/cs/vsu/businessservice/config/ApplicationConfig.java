@@ -1,11 +1,7 @@
 package cs.vsu.businessservice.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import cs.vsu.businessservice.exception.ErrorMessage;
-import cs.vsu.businessservice.service.security.impl.UserDetailsServiceImpl;
+import cs.vsu.businessservice.service.HttpServletUtilsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,21 +12,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
-@Configuration
 @RequiredArgsConstructor
+@Configuration
 public class ApplicationConfig {
-    private final UserDetailsServiceImpl userDetailService;
-
-    private final ObjectMapper objectMapper;
+    private final UserDetailsService userDetailService;
+    private final HttpServletUtilsService httpServletUtilsService;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -43,15 +38,15 @@ public class ApplicationConfig {
     @Bean
     AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
+            var description = new StringBuilder();
             log.error(authException.getMessage(), authException);
-            response.setContentType("application/json");
+            var exceptionResponseMapper = httpServletUtilsService.modifyResponseContentType(request, response,description);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            response.getOutputStream().println(
-                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+            response.getWriter().write(
+                    exceptionResponseMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                             ErrorMessage.builder()
                                     .message(authException.getMessage())
-                                    .description(request.getRequestURI())
+                                    .description(description.toString())
                                     .statusCode(HttpStatus.UNAUTHORIZED.value())
                                     .time(LocalDateTime.now())
                                     .build()
@@ -64,13 +59,14 @@ public class ApplicationConfig {
     AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             log.error(accessDeniedException.getMessage(), accessDeniedException);
-            response.setContentType("application/json");
+            var description = new StringBuilder();
+            var exceptionResponseMapper = httpServletUtilsService.modifyResponseContentType(request, response, description);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getOutputStream().println(
-                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+            response.getWriter().write(
+                    exceptionResponseMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
                             ErrorMessage.builder()
                                     .message(accessDeniedException.getMessage())
-                                    .description(request.getRequestURI())
+                                    .description(description.toString())
                                     .statusCode(HttpStatus.FORBIDDEN.value())
                                     .time(LocalDateTime.now())
                                     .build()
@@ -81,20 +77,6 @@ public class ApplicationConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    JsonDeserializer<LocalDateTime> jsonDeserializer() {
-        return (jsonElement, type, jsonDeserializationContext) -> LocalDateTime.parse(jsonElement.getAsString(), DateTimeFormatter.ISO_DATE_TIME);
-    }
-
-    @Bean
-    public Gson gson(JsonDeserializer<LocalDateTime> jsonDeserializer) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, jsonDeserializer);
-
-        return gsonBuilder.setPrettyPrinting().create();
     }
 
     @Bean

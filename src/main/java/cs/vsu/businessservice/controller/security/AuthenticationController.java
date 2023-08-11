@@ -8,27 +8,29 @@ import cs.vsu.businessservice.service.security.AuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
-
     private final AuthenticationService service;
 
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("/register")
+    @GetMapping(
+            value = "/register",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegistrationRequest request
     ) {
         return ResponseEntity.ok(service.register(request));
     }
 
-    @PostMapping("/authenticate")
+    @GetMapping(
+            value ="/authenticate",
+            produces = { "application/json", "application/xml", "application/x-yaml" }
+    )
     public ResponseEntity<AuthenticationResponse> authenticateRequest(
             @RequestBody AuthenticationRequest request
     ) {
